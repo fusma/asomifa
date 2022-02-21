@@ -41,6 +41,7 @@ function preload(){
   createStage()//もろもろのスプライトを配置
 }
 
+
 function create(){
   let { width, height } = this.sys.game.canvas;
   bg = this.add.rectangle(width/2, height/2, width,height, 0xc8c8c8);
@@ -51,7 +52,6 @@ function create(){
   rectangleGroup = this.physics.add.group();
   for(let i=1;i<20;i++){
     console.log(i)
-    var graphics = this.add.graphics();
     let randx = Phaser.Math.Between(0,width);
     let randy = Phaser.Math.Between(0,height);
     let radius = 2;
@@ -62,7 +62,6 @@ function create(){
     r.setData("canInflate",true);
     console.log(r.data.values.canInflate)
   }
-  var r1 = this.add.circle(100, 100, 39, 0x02ff00);
   function overlap(a,b){
     //丸同士の衝突の処理
     a.setData("canInflate",false);
@@ -91,9 +90,6 @@ function update(){
       c.body.setCircle(c.radius+shield,-shield,-shield);
     }
   }
-  let positionList = addPoint()
-  //丸の生成
-
 
 }
 
