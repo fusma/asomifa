@@ -23,6 +23,7 @@ var config = {
     default:"arcade",
     arcade:{
       debug: true,
+      gravity:{y:0},
     }
   }
 };
@@ -48,25 +49,28 @@ function create(){
   console.log(this.config)
   circleGroup = this.physics.add.group();
   rectangleGroup = this.physics.add.group();
-  for(let i=1;i<10;i++){
+  for(let i=1;i<20;i++){
     console.log(i)
     var graphics = this.add.graphics();
     let randx = Phaser.Math.Between(0,width);
     let randy = Phaser.Math.Between(0,height);
-    let r = this.add.circle(randx,randy,4,0xffffff);
+    let radius = 2;
+    let r = this.add.circle(randx,randy,radius-2,0xffffff);
     circleGroup.add(r)
     this.physics.add.existing(r, false);
-    r.body.setCollideWorldBounds(true);
-    r.body.setCircle(40);
-    //let r = graphics.strokeCircleShape({x:randx, y:randy, radius:4});
-    //let circle = new Phaser.Geom.Circle(randx,randy,20);
-    //let graphi = this.add.graphics({fillStyle: { color: 0xff00ff } });
-    //graphi.fillCircleShape(circle);
-    //circleGroup.add(graphi);
+    r.body.setCircle(radius+3,-radius/2,-radius/2);
+    r.setData("canInflate",true);
+    console.log(r.data.values.canInflate)
   }
-  var r1 = this.add.circle(200, 200, 33, 0x02ff00);
-
-
+  var r1 = this.add.circle(100, 100, 39, 0x02ff00);
+  function overlap(a,b){
+    //丸同士の衝突の処理
+    a.setData("canInflate",false);
+  }
+  //衝突判定の追加
+  for(let c of circleGroup.getChildren()){
+    this.physics.add.overlap(c,circleGroup,overlap,null,this)
+  }
 }
 
 function update(){
@@ -77,18 +81,15 @@ function update(){
     let y = c.y;
     let r = c.radius;
    // console.log(r,y,1)
-    let caninflate = true;
-    let circleCollide = circleGroup.getChildren().some((d)=>(!(c===d)) & (Phaser.Math.Distance.Between(x,y,d.x,d.y)<=r+d.radius));
-    let rectCollide = rectangleGroup.getChildren().some((d)=>(!(c===d) )& Phaser.Geom.Intersects.CircleToRectangle(c,d));
-    //それぞれ円と長方形(障害物？)とどれだけcollideしているか
-    let inCam = Phaser.Geom.Intersects.CircleToRectangle(c,bg);
-    //画面内に入っているか
-    if(!circleCollide&!rectCollide&!inCam){
-      c.radius += 1;
-      console.log(circleCollide,rectCollide,inCam)
+    let inCam = x>r & x+r < width & y>r & y+r < height;
+    console.log(c.data.values.canInflate)
+    if(c.data.values.canInflate& inCam){
+      console.log(x,y,r)
+      shield = 0;//shield は、当たり判定と実際の円の大きさの差
+      radius = r + 1;
+      c.radius = radius;
+      c.body.setCircle(c.radius+shield,-shield,-shield);
     }
-
-
   }
   let positionList = addPoint()
   //丸の生成
