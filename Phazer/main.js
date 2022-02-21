@@ -50,7 +50,7 @@ function create(){
   console.log(this.config)
   circleGroup = this.physics.add.group();
   rectangleGroup = this.physics.add.group();
-  for(let i=1;i<20;i++){
+  for(let i=0;i<20;i++){
     console.log(i)
     let randx = Phaser.Math.Between(0,width);
     let randy = Phaser.Math.Between(0,height);
@@ -84,8 +84,9 @@ function update(){
     console.log(c.data.values.canInflate)
     if(c.data.values.canInflate& inCam){
       console.log(x,y,r)
-      shield = 0;//shield は、当たり判定と実際の円の大きさの差
-      radius = r + 1;
+      let dr = 2 //1fに大きくなるサイズ
+      let shield = dr;//shield は、当たり判定と実際の円の大きさの差
+      radius = r + dr;
       c.radius = radius;
       c.body.setCircle(c.radius+shield,-shield,-shield);
     }
